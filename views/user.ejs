@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title><%=title%></title>
+        <script type="text/javascript" src="/../js/jquery-1.10.2.min.js"></script>
+        <link rel="stylesheet" href="/../css/style.css">
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- jQuery library -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <!-- Latest compiled JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <link rel="stylesheet" href="./../font-awesome-4.7.0/css/font-awesome.min.css">
+    </head>
+<body>
+    <div class="container">
+        <div class="jumbotron">
+                <form method="post" action="" id="the-form" class="form-horizontal">
+                    <div class="form-group">
+                      <label for="name" class="control-label col-sm-2">NAME:</label>
+                      <div class="col-sm-10">      
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
+                      </div>
+                    </div>
+                     <div class="form-group">
+                      <label for="email" class="control-label col-sm-2">EMAIL:</label>
+                      <div class="col-sm-10">      
+                        <input type="text" class="form-control" id="email" name="email" placeholder="Enter Email">
+                      </div>
+                    </div>
+                     <div class="form-group">
+                        <label for="password" class="control-label col-sm-2">PASSWORD:</label>
+                        <div class="col-sm-10">          
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter Password">
+                        </div>
+                    </div>
+                    <div class="form-group">        
+                      <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" class="btn btn-success" onClick="saveUser()">Insert</button>
+                      </div>
+                    </div>
+                </form>
+        </div>
+        <div class="page-data">
+            <ul class="err-area"></ul>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tr>
+                    <th>No</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Password</th>
+                    <th>Action</th>
+                </tr>
+                               
+                <% if(data.length){ 
+                                
+                 for(var i = 0;i < data.length;i++) { %>
+                 
+                <tr>
+                    <td><%=(i+1)%></td>
+                    <td><%=data[i].name%></td>
+                    <td><%=data[i].email%></td>
+                    <td><%=data[i].password%></td>
+                    <td>
+                        <a class="a-inside edit" href="/api/user/<%=data[i].user_id%>">
+                        <button type="button" class="btn btn-warning"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>&nbsp;Edit</button></a>
+                       
+                        <a class="a-inside delete" href="javascript:void(0)" onClick="deleteUser(<%=data[i].user_id%>)"><button type="button" class="btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i>&nbsp;Delete</button></a>
+                       
+                    </td>
+                </tr>
+            <% }
+            
+             }else{ %>
+                 <tr>
+                    <td colspan="5">No Data</td>
+                 </tr>
+            <% } %>
+                                              
+            </table>
+        </div>
+    </div>
+
+
+<script>
+
+    function saveUser(){
+       
+       $.ajax({
+        
+        url:"/api/user",
+        type:"post",
+        data:$("#the-form").serialize(),
+        success:function(res){
+            
+            window.location.reload();
+            return false;
+        },
+        error:function(xhr, status, error){
+            
+            console.log(xhr.responseText);
+            var err = '';
+            $.each(JSON.parse(xhr.responseText) , function(i, item) {
+               
+                 err +='<li>'+item.msg+'</li>';
+            });
+            $(".err-area").html(err);    
+            return false;
+        }
+        
+       });
+    }
+    
+    function deleteUser(user_id){
+    
+        $.ajax({
+            url:"/api/user/"+user_id,
+            type: 'DELETE',
+            success: function(res) {
+                
+                window.location.reload();
+                return false;
+            },
+            error:function(xhr, status, error){
+            
+                console.log(xhr.responseText);
+                alert("Error deleting");
+                return false;
+            }
+        });
+    }
+
+</script>
+</body>
+</html>
